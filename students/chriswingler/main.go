@@ -14,13 +14,26 @@ func main() {
 		log.Fatal(err)
 	}
 
-	reader := csv.NewReader(csvFile)
+	csvReader := csv.NewReader(csvFile)
 
-	stuff, err := reader.ReadAll()
+	line, err := csvReader.ReadAll()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(stuff)
+	for i := 0; i < len(line); i++ {
+		fmt.Println(line[i][0])
+		fmt.Println(line[i][1])
+	}
+
+	var val string
+
+	for {
+		fmt.Println("enter a value")
+
+		fmt.Scanf("%s", &val)
+
+		fmt.Println("you entered: ", val)
+	}
 }
