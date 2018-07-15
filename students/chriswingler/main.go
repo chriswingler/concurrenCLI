@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -32,26 +33,47 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// set val with type string to handle cmd line input
-	var val string
+	// set inputVal with type string to handle cmd line input
+	var inputVal string
 
+	// boolean variable that is set / tells us when question is finished
+	finished := make(chan bool)
+
+	go traverseCSVLines(inputVal, line, finished)
+
+	msg := <-finished
+	fmt.Println(msg)
+}
+
+// whitespace formatting
+func addLineBreak(n int) {
+	for i := 0; i <= n; i++ {
+		fmt.Println()
+	}
+}
+
+// loop through each line and get input / compare to answer
+func traverseCSVLines(inputVal string, line [][]string, finished chan bool) {
 	// counter
 	var questionsAnsweredCorrectly int
 
-	// loop through each line and get input / compare to answer
 	for i := range line {
 
 		fmt.Println("What is", line[i][0], "?")
 
+		time.Sleep(time.Second * 5)
+
+		finished <- true
+
 		addLineBreak(1)
 
-		fmt.Scanf("%s", &val)
+		fmt.Scanf("%s", &inputVal)
 
 		addLineBreak(1)
 
 		var greeting string
 
-		if val == line[i][1] {
+		if inputVal == line[i][1] {
 			greeting = ":) Congrats!"
 			questionsAnsweredCorrectly++
 		} else {
@@ -60,18 +82,8 @@ func main() {
 
 		addLineBreak(5)
 
-		fmt.Println(greeting, "You entered:", val, "and the answer is", line[i][1])
+		fmt.Println(greeting, "You entered:", inputVal, "and the answer is", line[i][1])
 
 		addLineBreak(1)
-	}
-
-	fmt.Println("You answered", questionsAnsweredCorrectly, "out of", len(line), "questions correctly")
-
-	addLineBreak(1)
-}
-
-func addLineBreak(n int) {
-	for i := 0; i <= n; i++ {
-		fmt.Println()
 	}
 }
