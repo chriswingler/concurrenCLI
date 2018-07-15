@@ -36,13 +36,7 @@ func main() {
 	// set inputVal with type string to handle cmd line input
 	var inputVal string
 
-	// boolean variable that is set / tells us when question is finished
-	finished := make(chan bool)
-
-	go traverseCSVLines(inputVal, line, finished)
-
-	msg := <-finished
-	fmt.Println(msg)
+	traverseCSVLines(inputVal, line)
 }
 
 // whitespace formatting
@@ -53,17 +47,15 @@ func addLineBreak(n int) {
 }
 
 // loop through each line and get input / compare to answer
-func traverseCSVLines(inputVal string, line [][]string, finished chan bool) {
+func traverseCSVLines(inputVal string, line [][]string) {
 	// counter
 	var questionsAnsweredCorrectly int
 
 	for i := range line {
 
+		start := time.Now().Unix()
+
 		fmt.Println("What is", line[i][0], "?")
-
-		time.Sleep(time.Second * 5)
-
-		finished <- true
 
 		addLineBreak(1)
 
@@ -83,6 +75,7 @@ func traverseCSVLines(inputVal string, line [][]string, finished chan bool) {
 		addLineBreak(5)
 
 		fmt.Println(greeting, "You entered:", inputVal, "and the answer is", line[i][1])
+		fmt.Println("It took you", time.Now().Unix()-start, "seconds")
 
 		addLineBreak(1)
 	}
