@@ -35,8 +35,12 @@ func main() {
 	// set val with type string to handle cmd line input
 	var val string
 
+	// counter
+	var questionsAnsweredCorrectly int
+
 	// loop through each line and get input / compare to answer
 	for i := range line {
+
 		fmt.Println("What is", line[i][0], "?")
 
 		addLineBreak(1)
@@ -49,6 +53,7 @@ func main() {
 
 		if val == line[i][1] {
 			greeting = ":) Congrats!"
+			questionsAnsweredCorrectly++
 		} else {
 			greeting = ":( Aww.."
 		}
@@ -58,8 +63,11 @@ func main() {
 		fmt.Println(greeting, "You entered:", val, "and the answer is", line[i][1])
 
 		addLineBreak(1)
-
 	}
+
+	fmt.Println("You answered", questionsAnsweredCorrectly, "out of", len(line), "questions correctly")
+
+	addLineBreak(1)
 }
 
 func addLineBreak(n int) {
