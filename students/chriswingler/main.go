@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -33,10 +34,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	timeLimit := flag.Int("limit", 30, "the time limit for the quiz in seconds")
+	flag.Parse()
+
+	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
+
 	// set inputVal with type string to handle cmd line input
 	var inputVal string
 
-	traverseCSVLines(inputVal, line)
+	traverseCSVLines(inputVal, line, timer)
 }
 
 // whitespace formatting
@@ -47,36 +53,57 @@ func addLineBreak(n int) {
 }
 
 // loop through each line and get input / compare to answer
-func traverseCSVLines(inputVal string, line [][]string) {
+func traverseCSVLines(inputVal string, line [][]string, timer *time.Timer) {
 	// counter
 	var questionsAnsweredCorrectly int
 
+	start := time.Now().Unix()
+
 	for i := range line {
+		select {
+		case <-timer.C:
+			fmt.Println("Out of time")
 
-		start := time.Now().Unix()
+			addLineBreak(1)
 
-		fmt.Println("What is", line[i][0], "?")
+			fmt.Println("You answered", questionsAnsweredCorrectly, "out of", len(line), "correctly.")
 
-		addLineBreak(1)
+			addLineBreak(1)
 
-		fmt.Scanf("%s", &inputVal)
+			os.Exit(0)
+		default:
 
-		addLineBreak(1)
+			fmt.Println("What is", line[i][0], "?")
 
-		var greeting string
+			addLineBreak(1)
 
-		if inputVal == line[i][1] {
-			greeting = ":) Congrats!"
-			questionsAnsweredCorrectly++
-		} else {
-			greeting = ":( Aww.."
+			fmt.Scanf("%s", &inputVal)
+
+			addLineBreak(1)
+
+			var greeting string
+
+			if inputVal == line[i][1] {
+				greeting = ":) Congrats!"
+				questionsAnsweredCorrectly++
+			} else {
+				greeting = ":( Aww.."
+				timer.Reset(time.Duration(time.Second))
+			}
+
+			addLineBreak(5)
+
+			fmt.Println(greeting, "You entered:", inputVal, "and the answer is", line[i][1])
+
+			addLineBreak(1)
+
+			fmt.Println("You answered", questionsAnsweredCorrectly, "out of", len(line), "correctly.")
+
+			addLineBreak(1)
+
+			fmt.Println("It took you", time.Now().Unix()-start, "seconds to finish this quiz")
+
+			addLineBreak(1)
 		}
-
-		addLineBreak(5)
-
-		fmt.Println(greeting, "You entered:", inputVal, "and the answer is", line[i][1])
-		fmt.Println("It took you", time.Now().Unix()-start, "seconds")
-
-		addLineBreak(1)
 	}
 }
